@@ -63,3 +63,6 @@ python 2.X 中str 和 unicode是一个比较混乱的局面。
 
 >2014-07-18 09:02:08 Kingo Wang:    
 >Nice to meet you, too!
+
+>2014-07-18 09:03:39 Kingo Wang:    
+>Nice to meet you, too, too!
