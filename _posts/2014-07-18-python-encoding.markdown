@@ -57,3 +57,6 @@ python 2.X 中str 和 unicode是一个比较混乱的局面。
 
 >2014-07-18 08:58:17 Kingo Wang:    
 >This is a good post!
+
+>2014-07-18 09:01:26 Kingo Wang:    
+>Nice to meet you!
