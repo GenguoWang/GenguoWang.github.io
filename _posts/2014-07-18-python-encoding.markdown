@@ -1,8 +1,9 @@
 ---    
 layout: post    
-title:  "python中的字符编码 "    
+title:  "python中的字符编码"    
 date:   2014-07-18 21:24:54    
 categories: coding    
+author: Kingo Wang
 ---    
     
 首先，以下问题只在python 2.x中出现. python 3.x里面已经解决了这种byte和string混乱的局面    
