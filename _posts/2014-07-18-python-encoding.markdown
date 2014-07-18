@@ -54,3 +54,6 @@ python 2.X 中str 和 unicode是一个比较混乱的局面。
     
 据说百分之八十的金钱损失皆因使用错误的编码导致，因此务必小心谨慎。    
 
+
+>2014-07-18 08:58:17 Kingo Wang:    
+>This is a good post!

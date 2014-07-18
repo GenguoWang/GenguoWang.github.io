@@ -27,13 +27,12 @@ else
         exit -1
     fi
 fi
-echo "$post"
+echo "commnet to $post"
 echo ">$date $user:    "
 echo ">$msg"
 echo "">> $post
 echo ">$date $user:    ">> $post
 echo ">$msg">> $post
-exit 0
 git add $post
 git commit -m"add comment"
 git push origin master
