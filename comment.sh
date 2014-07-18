@@ -30,9 +30,14 @@ fi
 echo "commnet to $post"
 echo ">$date $user:    "
 echo ">$msg"
+echo "sure to comment?(press enter to continue,or Ctrl+C to stop)"
+read
+echo "commenting..."
 echo "">> $post
 echo ">$date $user:    ">> $post
 echo ">$msg">> $post
+git pull origin master
 git add $post
 git commit -m"add comment"
 git push origin master
+echo "suceeded!"
