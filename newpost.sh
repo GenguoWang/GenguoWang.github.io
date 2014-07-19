@@ -1,6 +1,5 @@
 #!/bin/bash
-if [ $# -ne 1 ]
-then
+if [ $# -ne 1 ]; then
     echo "Usage: $0 postname"
     exit -1
 fi
@@ -11,14 +10,13 @@ tag=$1
 name=` echo "$1" | sed 's/ /-/g'`
 draft="_drafts/${predate}-${name}.md"
 post="_posts/${predate}-${name}.md"
-echo $post
-num=`ls $post 2>/dev/null | wc | awk '{print $1}'`
-if [ $num -eq 1 ]
-then
+if [ -f "$post" ]; then
     echo "$post already exists"
 	exit -1
 fi
-cat post.tpl |sed -e "s/####//;s/NAME/$user/;s/DATE/$date/;s/TAG/$tag/" > $draft
+if [ ! -f "$draft" ]; then
+    cat post.tpl |sed -e "s/####//;s/NAME/$user/;s/DATE/$date/;s/TAG/$tag/" > $draft
+fi
 vim $draft
 echo "sure to post?(press enter to continue,or Ctrl+C to stop)"
 read

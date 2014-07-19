@@ -38,6 +38,7 @@ echo ">$date $user:    ">> $post
 echo ">$msg">> $post
 git pull origin master
 git add $post
-git commit -m"add comment"
+git commit -m"comment $post"
 git push origin master
 echo "suceeded!"
+
