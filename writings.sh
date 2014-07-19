@@ -9,7 +9,7 @@ user=`cat user.conf |sed 's/^\s*username\s*=\s*\(.*\)\s*$/\1/'|head -n 1`
 tag=$1
 name=` echo "$1" | sed 's/ /-/g'`
 draft="_drafts/${predate}-${name}.md"
-post="_writings/${predate}-${name}.md"
+post="writings/${predate}-${name}.md"
 if [ -f "$post" ]; then
     echo "$post already exists"
 	exit -1
