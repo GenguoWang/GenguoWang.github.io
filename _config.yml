@@ -10,3 +10,4 @@ github_username:  GenguoWang
 # Build settings
 markdown: kramdown
 permalink: pretty
+timezone: GMT
