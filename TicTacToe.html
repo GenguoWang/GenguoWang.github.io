@@ -7,7 +7,30 @@
     <script src="/js/TicTacToe.js"></script>
 </head>
 <body>
-    <canvas id="myCanvas" width="800" height="800">
+    <div>
+        <select id="selLeft">
+            <option>Human</option>
+            <option>Random</option>
+            <option>AI</option>
+        </select>
+        <select id="selRight">
+            <option>Human</option>
+            <option>Random</option>
+            <option>AI</option>
+        </select>
+        Delay(ms):
+        <select id="selDelay">
+            <option>1</option>
+            <option>10</option>
+            <option>100</option>
+            <option>500</option>
+            <option>1000</option>
+        </select>
+        <button id="btnPlay">Play</button>
+        Times:<input id="txtTotal" type="text" value="100"/>
+        <button id="btnRun">Run</button>
+    </div>
+    <canvas id="myCanvas" width="500" height="500">
         your browser doesn't support canvas!
     </canvas>
 </body>
