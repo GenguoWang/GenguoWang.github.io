@@ -202,16 +202,20 @@
                 {
                     if(i%2 == stepChoose)
                     {
-                        var x = this.getX(chesses);
-                        var estimateValue = 0;
-                        for(var j=0; j<this.wNum;++j) estimateValue += x[j]*this.w[j];
-                        for(var j=0; j<this.wNum;++j)
-                        {
-                            this.w[j] += (value-estimateValue)*x[j]*this.stepSize;
-                        }
-                        value = estimateValue;
+                        this.learnOneChess(chesses,value);
+                        value = this.getEstimateValue(chesses);
                     }
                     chesses[chessHistory[i]] = 0;
+                }
+            },
+            learnOneChess:function(chesses,value)
+            {
+                var x = this.getX(chesses);
+                var estimateValue = 0;
+                for(var j=0; j<this.wNum;++j) estimateValue += x[j]*this.w[j];
+                for(var j=0; j<this.wNum;++j)
+                {
+                    this.w[j] += (value-estimateValue)*x[j]*this.stepSize;
                 }
             },
             getEstimateValue:function(chesses)
@@ -226,7 +230,6 @@
                 var x = [1,0,0,0];
                 function handleOneline(line)
                 {
-                    var y = [1,0,0,0];
                     line.sort();
                     var lineValue = line.reduce(function(sum,num){return sum*3+num});
                     var treeValue = 13;
@@ -291,6 +294,74 @@
                 this.learn(game.chessHistory, game.winner);
             }
         }
+    );
+    var PlayAi2 = KingoJS.Class.define(
+        function()
+        {
+            PlayAi.call(this);
+            this.w = [0,0,0,0,0,0];
+            this.wNum = 6;
+        },
+        {
+            getX:function(chesses)
+            {
+                var x = [1,0,0,0,0,0];
+                function handleOneline(line)
+                {
+                    line.sort();
+                    var lineValue = line.reduce(function(sum,num){return sum*3+num});
+                    var treeValue = 13;
+                    var twoValue = 4;
+                    var otherTwo = 8;
+                    var oneValue = 1;
+                    var otherOne = 2;
+                    if(lineValue == treeValue) x[1]++;
+                    else if(lineValue == twoValue) x[2]++;
+                    else if(lineValue == otherTwo) x[3]++;
+                    else if(lineValue == oneValue) x[4]++;
+                    else if(lineValue == otherOne) x[5]++;
+                }
+                handleOneline([chesses[0],chesses[1],chesses[2]]);
+                handleOneline([chesses[3],chesses[4],chesses[5]]);
+                handleOneline([chesses[6],chesses[7],chesses[8]]);
+                handleOneline([chesses[0],chesses[3],chesses[6]]);
+                handleOneline([chesses[1],chesses[4],chesses[7]]);
+                handleOneline([chesses[2],chesses[5],chesses[8]]);
+                handleOneline([chesses[0],chesses[4],chesses[8]]);
+                handleOneline([chesses[2],chesses[4],chesses[6]]);
+                if(x[1]>0) x[1] = 1;
+                return x;
+            }
+        },
+        {},
+        PlayAi
+    );
+    var PlayAi3 = KingoJS.Class.define(
+        function()
+        {
+            PlayAi.call(this);
+            this.w = [];
+            this.wNum = Math.pow(3,9);
+            this.stepSize = 0.15;
+            for(var i=0;i<this.wNum;++i) this.w[i] = 0;
+        },
+        {
+            getX:function(chesses)
+            {
+                return chesses.reduce(function(accu,value){return accu*3+value;});
+            },
+            learnOneChess:function(chesses, value)
+            {
+                var x = this.getX(chesses);
+                this.w[x] += this.stepSize * (value - this.w[x]);
+            },
+            getEstimateValue:function(chesses)
+            {
+                return this.w[this.getX(chesses)];
+            }
+        },
+        {},
+        PlayAi
     );
     var PlayHuman = KingoJS.Class.define(
         function()
@@ -425,6 +496,9 @@
     var status = [0, 0, 0];
     var allGamesPlayedPromise;
     var aiPlayer = [new PlayAi(), new PlayAi()];
+    var ai2Player = [new PlayAi2(), new PlayAi2()];
+    var ai3Player = [new PlayAi3(), new PlayAi3()];
+    window.Player = ai3Player[0];
     var autoPlayer = [new PlayAuto(), new PlayAuto()];
     var humanPlayer = [new PlayHuman(), new PlayHuman()];
     function getPlayer(select, name)
@@ -440,6 +514,14 @@
         else if(name == "AI")
         {
             return aiPlayer[select];
+        }
+        else if(name == "AI2")
+        {
+            return ai2Player[select];
+        }
+        else if(name == "AI3")
+        {
+            return ai3Player[select];
         }
     }
     function getMsg(winner)

@@ -12,8 +12,15 @@
         }
     }
 
-    function defineClass(constructor, memberMethods, staticMember) {
-        constructor.prototype = memberMethods;
+    function defineClass(constructor, memberMethods, staticMember, parentClass) {
+        if(parentClass===undefined)
+        {
+            parentClass = Object;
+        }
+        constructor.prototype = Object.create(parentClass.prototype);
+        for (var k in memberMethods) {
+            constructor.prototype[k] = memberMethods[k];
+        }
         for (var k in staticMember) {
             constructor[k] = staticMember[k];
         }
