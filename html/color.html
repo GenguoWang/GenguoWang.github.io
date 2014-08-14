@@ -1,0 +1,231 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Color</title>
+</head>
+<body>
+    <div style="overflow:hidden">
+        <div style="float:left">
+            <canvas id="myCanvas" width="1024" height="1024" style="display:none;">
+                your browser doesn't support canvas!
+            </canvas>
+            <canvas id="actualCanvas" width="512" height="512">
+                your browser doesn't support canvas!
+            </canvas>
+        </div>
+        <div style="float:left;margin-left:5px;">
+            <div>
+                <div>
+                    View Picture:
+                </div>
+                <select id="selPic">
+                    <option>pic1</option>
+                    <option>pic2</option>
+                    <option>pic3</option>
+                    <option>pic4</option>
+                    <option>pic5</option>
+                    <option>pic6</option>
+                </select>
+            </div>
+            <div>
+                <div>
+                    Draw your own:
+                </div>
+                <textarea id="code" style="height:600px;width:400px;">
+                </textarea>
+                <button id="btnDraw">Draw</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        var globalDict = { }
+        var width = 1024;
+        var height = width;
+        var half = width/2;
+        function square(x)
+        {
+            return x*x;
+        }
+        var pic1 = 
+{
+red: function(x,y)
+{
+    return Math.floor(square(Math.cos(Math.atan2(y-half,x-half)/2))*255);
+},
+green: function(x,y)
+{
+    return Math.floor(square(Math.cos(Math.atan2(y-half,x-half)/2-2*Math.acos(-1)/3))*255);
+},
+blue: function(x,y)
+{
+    
+    return Math.floor(square(Math.cos(Math.atan2(y-half,x-half)/2+2*Math.acos(-1)/3))*255);
+}
+}
+        var pic2 = 
+{
+red:function(x,y)
+{
+   var a=0,b=0,c,d,n=0;
+   while((c=a*a)+(d=b*b)<4&&n++<880)
+   {
+    b=2*a*b+y*8e-9-.645411;
+    a=c-d+x*8e-9+.356888;
+   }
+    return 255*Math.pow((n-80)/800,3.);
+},
+green:function(x,y)
+{
+   var a=0,b=0,c,d,n=0;
+    while((c=a*a)+(d=b*b)<4&&n++<880)
+    {b=2*a*b+y*8e-9-.645411;a=c-d+x*8e-9+.356888;}
+    return 255*Math.pow((n-80)/800,.7); 
+},
+blue:function(x,y)
+{
+    var a=0,b=0,c,d,n=0;
+    while((c=a*a)+(d=b*b)<4&&n++<880)
+    {b=2*a*b+y*8e-9-.645411;a=c-d+x*8e-9+.356888;}
+    return 255*Math.pow((n-80)/800,.5);
+}
+}
+        var pic3 = 
+{
+red:function(x,y)
+{
+    var i=0,j=0;var k;for(k=0;k++<256;){var a=i*i-j*j+(x-768.0)/512;
+    j=2*i*j+(y-512.0)/512;i=a;if(i*i+j*j>4)break;}return Math.log(k)*47;
+},
+green:function(x,y)
+{
+    var i=0,j=0;var k;for(k=0;k++<256;){var a=i*i-j*j+(x-768.0)/512;
+    j=2*i*j+(y-512.0)/512;i=a;if(i*i+j*j>4)break;}return Math.log(k)*47;
+},
+blue:function(x,y)
+{
+    var i=0,j=0;var k;for(k=0;k++<256;){var a=i*i-j*j+(x-768.0)/512;
+    j=2*i*j+(y-512.0)/512;i=a;if(i*i+j*j>4)break;}return 128-Math.log(k)*23;
+}
+}
+        var c = document.getElementById("myCanvas");
+        var ac = document.getElementById("actualCanvas");
+        var ctx = c.getContext("2d");
+        var acctx = ac.getContext("2d");
+        acctx.scale(0.5,0.5);
+        var timer;
+        function draw(ctx, width, height, pic)
+        {
+            if(timer) clearTimeout(timer);
+            timer = undefined;
+            var imageData = ctx.getImageData(0,0,width,height);
+            var data = imageData.data;
+            var len = data.length;
+            var sectionSize = 10000;
+            function drawPoint(i)
+            {
+                var y = (i/4) % width;
+                var x = (i/4-y)/height;
+                data[i] = pic.red(x,y);
+                data[i+1] = pic.green(x,y);
+                data[i+2] = pic.blue(x,y);
+                data[i+3] = 255;
+            }
+            function drawSection(i)
+            {
+                timer = undefined;
+                var loop = sectionSize;
+                while(i<len && loop > 0)
+                {
+                    drawPoint(i,data);
+                    i += 4;
+                    loop--;
+                }
+                ctx.putImageData(imageData,0,0);
+                acctx.drawImage(c,0,0);
+                if(i<len)
+                {
+                    timer = setTimeout(drawSection,0,i);
+                }
+            }
+            drawSection(0);
+        }
+        var pic4 = eval("({\nred:function(x,y)\n{return (x+y)%256;},\ngreen:function(x,y)\n{return (x+256-y)%256;},\nblue:function(x,y)\n{return (y+256-x)%256;}\n})");
+        var pic5 = 
+{
+red:function (x,y)
+{
+    var g=globalDict;
+    if(g["red"]==undefined)g["red"]=0.0;
+    g["red"]+=Math.random();
+    var l = Math.floor(g["red"])%512;
+    return l>255?511-l:l;
+},
+green:function (x,y)
+{
+    var g=globalDict;
+    if(g["green"]==undefined)g["green"]=0.0;
+    g["green"]+=Math.random();
+    var l = Math.floor(g["green"])%512;
+    return l>255?511-l:l;
+},
+blue:function (x,y)
+{
+    var g=globalDict;
+    if(g["blue"]==undefined)g["blue"]=0.0;
+    g["blue"]+=Math.random();
+    var l = Math.floor(g["blue"])%512;
+    return l>255?511-l:l;
+}
+}
+var pic6 = 
+{
+red:function(x,y)
+{
+    var dx = x-512, dy = y-512;
+    var a = Math.atan2(dy,dx);
+    if(a<0) a=-a;
+    var dist = Math.sqrt(dx*dx+dy*dy);
+    var l = Math.floor(dist+a*100)%512;
+    return l>255?511-l:l;
+},
+green:function(x,y)
+{
+    var dx = x-512, dy = y-512;
+    var a = Math.atan2(dy,dx);
+    if(a<0) a=-a;
+    var dist = Math.sqrt(dx*dx+dy*dy);
+    var l = Math.floor(dist+80+a*100)%512;
+    return l>255?511-l:l;
+},
+blue:function(x,y)
+{
+    var dx = x-512, dy = y-512;
+    var a = Math.atan2(dy,dx);
+    if(a<0) a=-a;
+    var dist = Math.sqrt(dx*dx+dy*dy);
+    var l = Math.floor(dist+160+a*100)%512;
+    return l>255?511-l:l;
+}
+}
+        var selPic = document.getElementById("selPic");
+        var code = document.getElementById("code");
+        var btnDraw = document.getElementById("btnDraw");
+        function drawSelect()
+        {
+            var pic = eval(selPic.value);
+            code.value = "//picture width 1024 height 1024,color range 0~255\n"+
+                         "{\n"+
+                         "red:"+pic.red.toString()+",\n"+
+                         "green:"+pic.green.toString()+",\n"+
+                         "blue:"+pic.blue.toString()+"\n"+
+                         "}\n";
+            draw(ctx,width,height,eval(selPic.value));
+        }
+        selPic.addEventListener("change",drawSelect,false);
+        btnDraw.addEventListener("click",function(){draw(ctx,width,height,eval("("+code.value+")"));},false);
+        drawSelect();
+
+    </script>
+</body>
+</html>
