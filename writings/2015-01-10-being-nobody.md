@@ -46,6 +46,5 @@ meta: being nobody
 这还是一场必输的战斗，明天日子依旧，又何苦在今天叫醒自己呢。但谁又能料定呢，说不定多叫醒几次，也就不那么容易睡着了。   
    
 不能把日子过的太没意思了，时间除了增加年龄，还是得留下些别的才好，嘛。
-![github](./favicon.ico)
 
-<img scr="./favicon.ico"/>
+![github](/favicon.ico)
