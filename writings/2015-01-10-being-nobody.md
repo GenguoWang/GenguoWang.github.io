@@ -1,11 +1,11 @@
----   
-layout: post    
-title:  "Ending up being nobody"   
-date:   2015-01-10 00:12:22   
-category: writings   
-author: Kingo Wang   
-meta: being nobody   
----   
+---
+layout: post
+title:  "Ending up being nobody"
+date:   2015-01-10 00:12:22
+category: writings
+author: Kingo Wang
+meta: being nobody
+---
    
 "Ending up being nobody"      
 一旦接受自己变得平庸，就可能一辈子都平庸。      
