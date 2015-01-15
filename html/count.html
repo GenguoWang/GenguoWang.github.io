@@ -1,0 +1,101 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<script src="/js/jquery-1.11.2.js"></script>
+<script src="/js/highcharts.js"></script>
+</head>
+<body>
+<div id="chart">
+</div>
+<script type="text/javascript">
+$(function () {
+    $('#chart').highcharts({
+        chart: {
+            type: 'spline'
+        },
+        title: {
+            text: '论文字数'
+        },
+        xAxis: {
+            type: 'datetime',
+            dateTimeLabelFormats: { // don't display the dummy year
+                month: '%e. %b',
+                year: '%b'
+            },
+            title: {
+                text: 'Date'
+            }
+        },
+        yAxis: {
+            title: {
+                text: '字数'
+            },
+            min: 0
+        },
+        tooltip: {
+            headerFormat: '<b>{series.name}</b><br>',
+            pointFormat: '{point.x:%e. %b}: {point.y} 字'
+        },
+
+        series: [{
+            name: '毕业论文',
+            // Define the data points. All series have a dummy year
+            // of 1970/71 in order to be compared on the same x axis. Note
+            // that in JavaScript, months start at 0 for January, 1 for February etc.
+            data: [
+[Date.parse("2014/12/14 16:06"), 8306],
+[Date.parse("2014/12/14 16:40"), 8824],
+[Date.parse("2014/12/15 00:41"), 9736],
+[Date.parse("2014/12/15 15:18"), 10344],
+[Date.parse("2014/12/15 23:54"), 11497],
+[Date.parse("2014/12/16 23:35"), 11768],
+[Date.parse("2014/12/16 23:59"), 12034],
+[Date.parse("2014/12/17 22:47"), 12571],
+[Date.parse("2014/12/17 23:30"), 13018],
+[Date.parse("2014/12/18 20:08"), 13437],
+[Date.parse("2014/12/18 21:32"), 13404],
+[Date.parse("2014/12/19 00:43"), 14344],
+[Date.parse("2014/12/19 13:32"), 14793],
+[Date.parse("2014/12/19 14:28"), 15188],
+[Date.parse("2014/12/19 15:15"), 15655],
+[Date.parse("2014/12/19 16:42"), 15947],
+[Date.parse("2014/12/19 20:22"), 16348],
+[Date.parse("2014/12/19 22:43"), 16678],
+[Date.parse("2014/12/20 00:14"), 17120],
+[Date.parse("2014/12/22 15:24"), 17443],
+[Date.parse("2014/12/22 22:15"), 17722],
+[Date.parse("2014/12/23 00:27"), 18723],
+[Date.parse("2014/12/23 15:39"), 19255],
+[Date.parse("2014/12/23 16:37"), 19882],
+[Date.parse("2014/12/23 17:50"), 20070],
+[Date.parse("2014/12/23 20:01"), 20262],
+[Date.parse("2014/12/23 21:25"), 20856],
+[Date.parse("2014/12/23 22:14"), 20858],
+[Date.parse("2014/12/23 23:55"), 21447],
+[Date.parse("2014/12/24 00:54"), 21931],
+[Date.parse("2014/12/24 12:48"), 21931],
+[Date.parse("2014/12/24 13:54"), 23006],
+[Date.parse("2014/12/24 15:31"), 23537],
+[Date.parse("2014/12/24 21:00"), 24305],
+[Date.parse("2014/12/24 22:22"), 25022],
+[Date.parse("2014/12/25 01:40"), 25613],
+[Date.parse("2014/12/25 16:08"), 25669],
+[Date.parse("2014/12/25 21:10"), 26772],
+[Date.parse("2014/12/25 23:57"), 26840],
+[Date.parse("2014/12/26 13:46"), 27083],
+[Date.parse("2014/12/26 17:37"), 28009],
+[Date.parse("2014/12/28 15:43"), 30293],
+[Date.parse("2014/12/28 20:30"), 31038],
+[Date.parse("2014/12/29 02:34"), 31451],
+[Date.parse("2014/12/29 19:48"), 31474],
+[Date.parse("2014/12/29 22:00"), 31475],
+//[Date.parse("2015/01/11 22:52"), 32043],
+            ]
+        }]
+    });
+});
+</script>
+</body>
+</html>
+
