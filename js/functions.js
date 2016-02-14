@@ -15,7 +15,7 @@ garden=new Garden(gardenCtx,gardenCanvas);
 $("#content").css("width",$loveHeart.width()+$("#code").width());
 $("#content").css("height",Math.max($loveHeart.height(),$("#code").height()));
 if(isPC())$("#content").css("margin-top",Math.max(($window.height()-$("#content").height())/2,10));
-$("#content").css("margin-left",Math.max(($window.width()-$("#content").width())/2,10));
+if(isPC())$("#content").css("margin-left",Math.max(($window.width()-$("#content").width())/2,10));
 setInterval(function(){garden.render()},Garden.options.growSpeed)});
 $(window).resize(function(){
     var b=$(window).width();
@@ -28,7 +28,7 @@ function getHeartPoint(c){
     var a=19.5*(16*Math.pow(Math.sin(b),3));
     var d=-20*(13*Math.cos(b)-5*Math.cos(2*b)-2*Math.cos(3*b)-Math.cos(4*b));
     console.log(a,d);
-    return new Array(335+a+offsetX,257.5+d+offsetY)
+    return new Array(330+a,257.5+d)
 }
 function startHeartAnimation(){
     var c=50;
@@ -47,7 +47,7 @@ function startHeartAnimation(){
         }
         if(e) {
             b.push(h);
-            garden.createRandomBloom(h[0]*rate,h[1]*rate)
+            garden.createRandomBloom(h[0]*rate+offsetX,h[1]*rate+offsetY)
         }
         if(d>=30){
             clearInterval(a);

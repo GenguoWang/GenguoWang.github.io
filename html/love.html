@@ -73,9 +73,13 @@ Do you?
     </div>
     <script type="text/javascript">
         if(!isPC()){
-            $("#loveHeart").css("width",$(window).width());
-            $("#loveHeart").css("height",$(window).height());
+            $("body").css("font-size",$(window).height()/568*11);
+            $("#loveHeart").css("width",$(window).width()-10);
+            $("#loveHeart").css("height",$(window).height()-10);
             $("#loveHeart").css("position","absolute");
+            $("#loveHeart").css("left","5px");
+            $("#loveHeart").css("top","5px");
+            $("#code").css("margin-left","10px");
         }
         var xWidth = $("#loveHeart").width();
         var xHeight = $("#loveHeart").height();
