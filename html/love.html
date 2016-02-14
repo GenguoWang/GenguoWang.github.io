@@ -74,15 +74,13 @@ Do you?
     <script type="text/javascript">
         if(!isPC()){
             $("body").css("font-size",$(window).height()/568*11);
-            $("#loveHeart").css("width",$(window).width()-10);
-            $("#loveHeart").css("height",$(window).height()-10);
+            $("#loveHeart").css("width",$(window).width());
+            $("#loveHeart").css("height",$(window).height());
             $("#loveHeart").css("position","absolute");
-            $("#loveHeart").css("left","5px");
-            $("#loveHeart").css("top","5px");
             $("#code").css("margin-left","10px");
         }
-        var xWidth = $("#loveHeart").width();
-        var xHeight = $("#loveHeart").height();
+        var xWidth = $("#loveHeart").width()-10;
+        var xHeight = $("#loveHeart").height()-10;
         var rateX = xWidth / 670.0;
         var rateY = xHeight / 625.0; 
         var offsetX = 0;

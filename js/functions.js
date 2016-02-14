@@ -27,15 +27,18 @@ function getHeartPoint(c){
     var b=c/Math.PI;
     var a=19.5*(16*Math.pow(Math.sin(b),3));
     var d=-20*(13*Math.cos(b)-5*Math.cos(2*b)-2*Math.cos(3*b)-Math.cos(4*b));
-    console.log(a,d);
-    return new Array(330+a,257.5+d)
+    return new Array(335+a,257.5+d)
 }
 function startHeartAnimation(){
+    Garden.options.bloomRadius.max *= rate;
+    Garden.options.bloomRadius.min *= rate;
     var c=50;
     var d=10;
     var b=new Array();
     var a=setInterval(function(){
         var h=getHeartPoint(d);
+        h[0] = h[0]*rate+offsetX;
+        h[1] = h[1]*rate+offsetY;
         var e=true;
         for(var f=0;f<b.length;f++){
             var g=b[f];
@@ -47,7 +50,7 @@ function startHeartAnimation(){
         }
         if(e) {
             b.push(h);
-            garden.createRandomBloom(h[0]*rate+offsetX,h[1]*rate+offsetY)
+            garden.createRandomBloom(h[0],h[1])
         }
         if(d>=30){
             clearInterval(a);
