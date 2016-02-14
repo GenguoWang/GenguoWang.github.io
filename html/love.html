@@ -15,6 +15,7 @@
             <div id="code">
 <pre id="enPre">
 To My Miley,
+
 Thank God and thank everything 
 Let me meet you
 Because of you, I
@@ -42,7 +43,8 @@ Missing you
 打怪升级做家务
 有家才有务
 I do
-
+</pre>
+<pre id="lastPre">
 Do you?
 </pre>
             </div>
@@ -101,11 +103,16 @@ Do you?
             }, 500);
 
             adjustCodePosition();
+            $("#zhPre").hide();
+            $("#lastPre").hide();
             $("#enPre").typewriter(110,function(){
-                $("#zhPre").typewriter(200);
+                $("#zhPre").show();
+                $("#zhPre").typewriter(150,function(){
+                    $("#lastPre").show();
+                    $("#lastPre").typewriter(250);
+                });
             });
         }
     </script>
 </body>
 </html>
-
