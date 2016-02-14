@@ -30,8 +30,8 @@ function getHeartPoint(c){
     return new Array(335+a,257.5+d)
 }
 function startHeartAnimation(){
-    Garden.options.bloomRadius.max *= rate;
-    Garden.options.bloomRadius.min *= rate;
+    Garden.options.bloomRadius.max *= Math.sqrt(rate);
+    Garden.options.bloomRadius.min *= Math.sqrt(rate);
     var c=50;
     var d=10;
     var b=new Array();
@@ -100,7 +100,7 @@ function isPC() {
     var userAgentInfo = navigator.userAgent;
     var Agents = ["Android", "iPhone",
                 "SymbianOS", "Windows Phone",
-                , "iPod"];
+                , "iPod","iPad"];
     var flag = true;
     for (var v = 0; v < Agents.length; v++) {
         if (userAgentInfo.indexOf(Agents[v]) > 0) {
