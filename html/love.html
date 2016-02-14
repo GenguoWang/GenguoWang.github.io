@@ -1,0 +1,111 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>K & M</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <link href="/css/love/default.css" type="text/css" rel="stylesheet">
+    <script type="text/javascript" src="/js/jquery-1.11.2.js"></script>
+    <script type="text/javascript" src="/js/garden.js"></script>
+    <script type="text/javascript" src="/js/functions.js"></script>
+</head>
+
+<body>
+    <div id="mainDiv">
+        <div id="content">
+            <div id="code">
+<pre id="enPre">
+To My Miley,
+Thank God and thank everything 
+Let me meet you
+Because of you, I
+Learned to know
+How long can night be
+How suffering can time be, And 
+How much can I be
+Missing you
+</pre>
+
+<pre id="zhPre">
+愿时光静好
+我们牵手走过
+漫长的极夜
+星空与极光
+去感受山风呼啸
+听三个字的回声
+飞翔 飞翔
+新西兰的跳伞
+阿尔卑斯的滑雪
+还有建一个家
+两个人
+唠嗑拌嘴
+吃喝打闹
+打怪升级做家务
+有家才有务
+I do
+
+Do you?
+</pre>
+            </div>
+        <div id="test"> 
+            <div id="loveHeart">
+                <canvas id="garden"></canvas>
+                <div id="words">
+                    <div id="messages">
+                        <Span id="metTime"></span> <br/>
+                        <Span id="togetherTime"></span> <br/>
+                        <Span id="lastTime"></span> <br/>
+                        <Span id="nextTime"></span> <br/>
+                    </div>
+                    <div id="loveu">
+                        Love u forever and ever.<br/>
+                        <div class="signature">- K to M</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        var offsetX = $("#loveHeart").width() / 2;
+        var offsetY = $("#loveHeart").height() / 2 - 55;
+        //2014-09-16 13:00:00 GMT+0800
+        var met = new Date("2014-09-16T05:00:03");
+        //2016-01-01 00:00:00 GMT+0800
+        var together = new Date("2015-12-31T16:00:00");
+        //2015-11-22 23:00:00 GMT+0800
+        var last = new Date("2015-11-22T15:00:05");
+        //2016-04-16 10:00:00 GMT+0800
+        var next = new Date("2016-04-16T02:00:00");
+        
+        if (!document.createElement('canvas').getContext) {
+            var msg = document.createElement("div");
+            msg.id = "errorMsg";
+            msg.innerHTML = "Your browser doesn't support HTML5!<br/>Recommend use Chrome 14+/IE 9+/Firefox 7+/Safari 4+"; 
+            document.body.appendChild(msg);
+            $("#code").css("display", "none")
+            document.execCommand("stop");
+        } else {
+            setTimeout(function () {
+                adjustWordsPosition();
+                startHeartAnimation();
+            }, 50);
+
+            timeElapse(met,"#metTime");
+            timeElapse(together,"#togetherTime");
+            timeElapse(last,"#lastTime");
+            timeElapse(next,"#nextTime");
+            setInterval(function () {
+                timeElapse(met,"#metTime");
+                timeElapse(together,"#togetherTime");
+                timeElapse(last,"#lastTime");
+                timeElapse(next,"#nextTime",true);
+            }, 500);
+
+            adjustCodePosition();
+            $("#enPre").typewriter(110,function(){
+                $("#zhPre").typewriter(200);
+            });
+        }
+    </script>
+</body>
+</html>
+
