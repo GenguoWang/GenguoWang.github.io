@@ -15,7 +15,7 @@
         <source src="/music/little_lucky.mp3" type="audio/mpeg">
         Your browser does not support the audio element.
     </audio>
-    <div style="position:absolute;top:5px;right:5px;">
+    <div style="z-index:1000;position:absolute;top:5px;right:5px;width:3em;height:3em" id="controlDiv">
         <img id="pauseIcon" src="/icon/glyphicons-184-volume-down.png" class="icon" />
         <img id="playIcon" src="/icon/glyphicons-183-mute.png" class="icon" />
     </div>
@@ -82,20 +82,23 @@ Do you?
             $("#code").css("margin-left","10px");
             $("#code").css("font-weight","bold");
         }
+        var controlDiv = document.getElementById("controlDiv");
         var audio = document.getElementById("audio");
         var pauseIcon = document.getElementById("pauseIcon");
         var playIcon = document.getElementById("playIcon");
         playIcon.style.display = "none";
-        playIcon.addEventListener("click",function(){
-            playIcon.style.display = "none";
-            pauseIcon.style.display = "block";
-            audio.play();
-        });
-        pauseIcon.addEventListener("click",function(){
-            playIcon.style.display = "block";
-            pauseIcon.style.display = "none";
-            audio.pause();
-        });
+        controlDiv.addEventListener("click",function(){
+            if(audio.paused){
+                playIcon.style.display = "none";
+                pauseIcon.style.display = "block";
+                audio.play();
+            }
+            else{
+                playIcon.style.display = "block";
+                pauseIcon.style.display = "none";
+                audio.pause();
+            }
+        },false);
         var xWidth = $("#loveHeart").width()-10;
         var xHeight = $("#loveHeart").height()-10;
         var rateX = xWidth / 670.0;
