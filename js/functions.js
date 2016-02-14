@@ -77,7 +77,7 @@ function timeElapse(c, selector, isReverse){
 function showMessages(){$("#messages").fadeIn(1500,function(){showLoveU()})}
 function adjustWordsPosition(){
     $("#words").css("position","absolute");
-    $("#words").css("top",$("#garden").position().top+$("#garden").height()*0.28+offsetY);
+    $("#words").css("top",$("#garden").position().top+180*rate+offsetY);
     $("#words").css("left",$("#garden").position().left)
     $("#words").css("width",$("#garden").width());
     if(!isPC()){
