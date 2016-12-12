@@ -22387,8 +22387,9 @@
 	    _this.onButtonClick = _this.onButtonClick.bind(_this);
 	    _this.onKeyPress = _this.onKeyPress.bind(_this);
 	    _this.onKeyDown = _this.onKeyDown.bind(_this);
+	    _this.calculatorStatus = (0, _status.getInitState)();
 	    _this.state = {
-	      calculatorStatus: (0, _status.getInitState)(),
+	      calculatorStatus: _this.calculatorStatus,
 	      version: 1
 	    };
 	    return _this;
@@ -22409,8 +22410,9 @@
 	  }, {
 	    key: 'onButtonClick',
 	    value: function onButtonClick(button) {
+	      this.calculatorStatus = this.calculatorStatus.action(button.type, button.value);
 	      this.setState({
-	        calculatorStatus: this.state.calculatorStatus.action(button.type, button.value),
+	        calculatorStatus: this.calculatorStatus,
 	        version: this.state.version + 1
 	      });
 	    }
