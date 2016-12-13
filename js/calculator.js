@@ -22411,6 +22411,7 @@
 	    key: 'onButtonClick',
 	    value: function onButtonClick(button) {
 	      this.calculatorStatus = this.calculatorStatus.action(button.type, button.value);
+	      console.log(this.calculatorStatus);
 	      this.setState({
 	        calculatorStatus: this.calculatorStatus,
 	        version: this.state.version + 1
@@ -25221,10 +25222,11 @@
 	};
 	
 	var OP_VALUE = exports.OP_VALUE = {
-	  PLUS: "+",
-	  MINUS: "-",
-	  MULTIPLE: "×",
-	  DIV: "÷"
+	  NONE: 0,
+	  PLUS: 101,
+	  MINUS: 102,
+	  MULTIPLE: 201,
+	  DIV: 202
 	};
 	
 	var UNARY_VALUE = exports.UNARY_VALUE = {
@@ -25280,15 +25282,92 @@
 	
 	var MAX_INPUT_LENGTH = 9;
 	
+	function calculate(op, n1, n2) {
+	  if (op == null) {
+	    return n1;
+	  }
+	  switch (op) {
+	    case _constants.UNARY_VALUE.PERCENT:
+	      return n1 / 100;
+	    case _constants.UNARY_VALUE.SIGN:
+	      return -n1;
+	    case _constants.OP_VALUE.PLUS:
+	      return n1 + n2;
+	    case _constants.OP_VALUE.MINUS:
+	      return n1 - n2;
+	    case _constants.OP_VALUE.MULTIPLE:
+	      return n1 * n2;
+	    case _constants.OP_VALUE.DIV:
+	      return n1 / n2;
+	    default:
+	      return Number.NaN;
+	  }
+	}
+	
+	function getOpPriority(opValue) {
+	  return Math.floor(opValue / 100);
+	}
+	
+	function calculateList(valueOpList, numValue) {
+	  if (numValue != null) {
+	    valueOpList = [].concat(valueOpList).concat([[numValue, _constants.OP_VALUE.NONE]]);
+	  } else {
+	    valueOpList = [].concat(valueOpList);
+	  }
+	  if (valueOpList.length === 1) {
+	    return valueOpList[0][0];
+	  }
+	  var lastValueOp = [valueOpList[0][0], valueOpList[0][1]];
+	  var newList = [lastValueOp];
+	  var i = 1;
+	  for (i = 1; i < valueOpList.length; i++) {
+	    if (getOpPriority(lastValueOp[1]) >= getOpPriority(valueOpList[i][1])) {
+	      lastValueOp[0] = calculate(lastValueOp[1], lastValueOp[0], valueOpList[i][0]);
+	      lastValueOp[1] = valueOpList[i][1];
+	    } else {
+	      lastValueOp = [valueOpList[i][0], valueOpList[i][1]];
+	      newList.push(lastValueOp);
+	    }
+	  }
+	  return calculateList(newList);
+	}
+	
+	function testCalculateList() {
+	  console.log("testCalculateList");
+	  console.log(calculateList([[4, _constants.OP_VALUE.PLUS]], 3), 7);
+	  console.log(calculateList([[4, _constants.OP_VALUE.PLUS], [2, _constants.OP_VALUE.MULTIPLE]], 3), 10);
+	  console.log(calculateList([[4, _constants.OP_VALUE.PLUS], [2, _constants.OP_VALUE.MULTIPLE], [6, _constants.OP_VALUE.DIV]], 3), 8);
+	  console.log(calculateList([[4, _constants.OP_VALUE.MULTIPLE], [2, _constants.OP_VALUE.MULTIPLE], [6, _constants.OP_VALUE.DIV]], 3), 16);
+	  console.log(calculateList([[4, _constants.OP_VALUE.MULTIPLE], [2, _constants.OP_VALUE.MINUS], [6, _constants.OP_VALUE.DIV]], 3), 6);
+	  console.log(calculateList([[4, _constants.OP_VALUE.PLUS], [2, _constants.OP_VALUE.MULTIPLE], [6, _constants.OP_VALUE.MINUS], [5, _constants.OP_VALUE.MULTIPLE]], 3), 1);
+	}
+	
+	testCalculateList();
+	
+	function _getDisplayValue(valueOpList, op, numValue) {
+	  var i = 0;
+	  var calcList = [];
+	  for (i = valueOpList.length - 1; i >= 0; i--) {
+	    if (getOpPriority(valueOpList[i][1]) >= getOpPriority(op)) {
+	      calcList.splice(0, 0, valueOpList[i]);
+	    } else {
+	      break;
+	    }
+	  }
+	  return calculateList(calcList, numValue);
+	}
+	
 	var Num = function () {
 	  function Num() {
 	    var sign = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
 	    var value = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "";
+	    var calculatedValue = arguments[2];
 	
 	    _classCallCheck(this, Num);
 	
 	    this.value = value;
 	    this.sign = sign; // 0 for positive, 1 for negative
+	    this.calculatedValue = calculatedValue;
 	  }
 	
 	  _createClass(Num, [{
@@ -25312,26 +25391,44 @@
 	  }, {
 	    key: 'numByFlipSign',
 	    value: function numByFlipSign() {
-	      return new Num(1 - this.sign, this.value);
+	      if (this.calculatedValue != null) {
+	        return new Num(undefined, undefined, -this.calculatedValue);
+	      } else {
+	        return new Num(1 - this.sign, this.value);
+	      }
+	    }
+	  }, {
+	    key: 'numByApplyUnary',
+	    value: function numByApplyUnary(op) {
+	      switch (op) {
+	        case _constants.UNARY_VALUE.SIGN:
+	          return new Num(undefined, undefined, -this.toValue());
+	        case _constants.UNARY_VALUE.PERCENT:
+	          return new Num(undefined, undefined, this.toValue() / 100);
+	      }
+	      return this;
 	    }
 	  }, {
 	    key: 'toText',
 	    value: function toText() {
-	      var sign = this.sign === 1 ? "-" : "";
-	      var value = this.value === "" ? "0" : this.value;
-	      return sign + value;
+	      if (this.calculatedValue != null) {
+	        return formatValue(this.calculatedValue);
+	      } else {
+	        var sign = this.sign === 1 ? "-" : "";
+	        var value = this.value === "" ? "0" : this.value;
+	        return sign + value;
+	      }
 	    }
 	  }, {
 	    key: 'toValue',
 	    value: function toValue() {
-	      var value = new Number(this.value).valueOf();
-	      var sign = this.sign === 1 ? -1 : 1;
-	      return sign * value;
-	    }
-	  }], [{
-	    key: 'fromValue',
-	    value: function fromValue(value) {
-	      return new Num(0, value.toText());
+	      if (this.calculatedValue != null) {
+	        return this.calculatedValue;
+	      } else {
+	        var value = new Number(this.value).valueOf();
+	        var sign = this.sign === 1 ? -1 : 1;
+	        return sign * value;
+	      }
 	    }
 	  }]);
 	
@@ -25351,51 +25448,34 @@
 	  }
 	}
 	
-	function calculate(op, n1, n2) {
-	  if (op == null) {
-	    return n1;
-	  }
-	  switch (op) {
-	    case _constants.UNARY_VALUE.PERCENT:
-	      return n1 / 100;
-	    case _constants.UNARY_VALUE.SIGN:
-	      return -n1;
-	    case _constants.OP_VALUE.PLUS:
-	      return n1 + n2;
-	    case _constants.OP_VALUE.MINUS:
-	      return n1 - n2;
-	    case _constants.OP_VALUE.MULTIPLE:
-	      return n1 * n2;
-	    case _constants.OP_VALUE.DIV:
-	      return n1 / n2;
-	    default:
-	      return Number.NaN;
-	  }
-	}
+	var StatusNum = function () {
+	  function StatusNum() {
+	    var valueOpList = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+	    var num = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : new Num();
 	
-	var StatusNum1 = function () {
-	  function StatusNum1(num) {
-	    _classCallCheck(this, StatusNum1);
+	    _classCallCheck(this, StatusNum);
 	
+	    this.valueOpList = valueOpList;
 	    this.num = num;
 	  }
 	
-	  _createClass(StatusNum1, [{
+	  _createClass(StatusNum, [{
 	    key: 'action',
 	    value: function action(type, value) {
+	      var lastOp = this.valueOpList.length > 0 ? this.valueOpList[this.valueOpList.length - 1][1] : null;
 	      switch (type) {
 	        case _constants.BUTTON_TYPE.DIGIT:
-	          return new StatusNum1(this.num.numByAddDigit(value));
+	          return new StatusNum(this.valueOpList, this.num.numByAddDigit(value));
 	        case _constants.BUTTON_TYPE.UNARY:
-	          return new StatusEq(calculate(value, this.num.toValue()), null, null);
+	          return new StatusNum(this.valueOpList, this.num.numByApplyUnary(value));
 	        case _constants.BUTTON_TYPE.SIGN:
-	          return new StatusNum1(this.num.numByFlipSign());
+	          return new StatusNum(this.valueOpList, this.num.numByFlipSign());
 	        case _constants.BUTTON_TYPE.CLEAR:
 	          return getInitState();
 	        case _constants.BUTTON_TYPE.OPERATOR:
-	          return new StatusOp(value, this.num.toValue());
+	          return new StatusOp(this.valueOpList, value, this.num.toValue());
 	        case _constants.BUTTON_TYPE.EQUAL:
-	          return this;
+	          return new StatusEq(calculateList(this.valueOpList, this.num.toValue()), lastOp, this.num.toValue());
 	        default:
 	          return this;
 	      }
@@ -25407,13 +25487,18 @@
 	    }
 	  }]);
 	
-	  return StatusNum1;
+	  return StatusNum;
 	}();
 	
 	var StatusOp = function () {
-	  function StatusOp(op, numValue) {
+	  function StatusOp() {
+	    var valueOpList = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+	    var op = arguments[1];
+	    var numValue = arguments[2];
+	
 	    _classCallCheck(this, StatusOp);
 	
+	    this.valueOpList = valueOpList;
 	    this.op = op;
 	    this.numValue = numValue;
 	  }
@@ -25421,30 +25506,38 @@
 	  _createClass(StatusOp, [{
 	    key: 'action',
 	    value: function action(type, value) {
-	      var op = this.op,
+	      var valueOpList = this.valueOpList,
+	          op = this.op,
 	          numValue = this.numValue;
 	
+	      var displayValue = this.getDisplayValue();
+	      var newList = [].concat(valueOpList).concat([[numValue, op]]);
 	      switch (type) {
 	        case _constants.BUTTON_TYPE.DIGIT:
-	          return new StatusNum2(numValue, op, new Num().numByAddDigit(value));
+	          return new StatusNum(newList, new Num().numByAddDigit(value));
 	        case _constants.BUTTON_TYPE.UNARY:
-	          return new StatusEq(calculate(value, numValue), op, numValue);
+	          return new StatusNum(newList, new Num(undefined, undefined, displayValue).numByApplyUnary(value));
 	        case _constants.BUTTON_TYPE.SIGN:
-	          return new StatusEq(-numValue, op, numValue);
+	          return new StatusNum(newList, new Num(undefined, undefined, displayValue).numByApplyUnary(value));
 	        case _constants.BUTTON_TYPE.CLEAR:
 	          return getInitState();
 	        case _constants.BUTTON_TYPE.OPERATOR:
-	          return new StatusOp(value, numValue);
+	          return new StatusOp(valueOpList, value, numValue);
 	        case _constants.BUTTON_TYPE.EQUAL:
-	          return new StatusEq(calculate(op, numValue, numValue), op, numValue);
+	          return new StatusEq(calculateList(newList, displayValue), op, displayValue);
 	        default:
 	          return this;
 	      }
 	    }
 	  }, {
+	    key: 'getDisplayValue',
+	    value: function getDisplayValue() {
+	      return _getDisplayValue(this.valueOpList, this.op, this.numValue);
+	    }
+	  }, {
 	    key: 'toText',
 	    value: function toText() {
-	      return formatValue(this.numValue);
+	      return formatValue(this.getDisplayValue());
 	    }
 	  }]);
 	
@@ -25469,7 +25562,7 @@
 	
 	      switch (type) {
 	        case _constants.BUTTON_TYPE.DIGIT:
-	          return new StatusNum1(new Num().numByAddDigit(value));
+	          return new StatusNum([], new Num().numByAddDigit(value));
 	        case _constants.BUTTON_TYPE.UNARY:
 	          return new StatusEq(calculate(value, result), op, numValue);
 	        case _constants.BUTTON_TYPE.SIGN:
@@ -25477,7 +25570,7 @@
 	        case _constants.BUTTON_TYPE.CLEAR:
 	          return getInitState();
 	        case _constants.BUTTON_TYPE.OPERATOR:
-	          return new StatusOp(value, result);
+	          return new StatusOp([], value, result);
 	        case _constants.BUTTON_TYPE.EQUAL:
 	          return new StatusEq(calculate(op, result, numValue), op, numValue);
 	        default:
@@ -25494,51 +25587,8 @@
 	  return StatusEq;
 	}();
 	
-	var StatusNum2 = function () {
-	  function StatusNum2(numValue1, op, num2) {
-	    _classCallCheck(this, StatusNum2);
-	
-	    this.numValue1 = numValue1;
-	    this.op = op;
-	    this.num2 = num2;
-	  }
-	
-	  _createClass(StatusNum2, [{
-	    key: 'action',
-	    value: function action(type, value) {
-	      var numValue1 = this.numValue1,
-	          op = this.op,
-	          num2 = this.num2;
-	
-	      switch (type) {
-	        case _constants.BUTTON_TYPE.DIGIT:
-	          return new StatusNum2(numValue1, op, num2.numByAddDigit(value));
-	        case _constants.BUTTON_TYPE.UNARY:
-	          return new StatusEq(calculate(value, num2.toValue()), op, numValue1);
-	        case _constants.BUTTON_TYPE.SIGN:
-	          return new StatusNum2(numValue1, op, num2.numByFlipSign());
-	        case _constants.BUTTON_TYPE.CLEAR:
-	          return getInitState();
-	        case _constants.BUTTON_TYPE.OPERATOR:
-	          return new StatusOp(value, calculate(op, numValue1, num2.toValue()));
-	        case _constants.BUTTON_TYPE.EQUAL:
-	          return new StatusEq(calculate(op, numValue1, num2.toValue()), op, num2.toValue());
-	        default:
-	          return this;
-	      }
-	    }
-	  }, {
-	    key: 'toText',
-	    value: function toText() {
-	      return this.num2.toText();
-	    }
-	  }]);
-	
-	  return StatusNum2;
-	}();
-	
 	function getInitState() {
-	  return new StatusNum1(new Num());
+	  return new StatusNum();
 	}
 
 /***/ },
