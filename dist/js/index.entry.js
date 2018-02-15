@@ -179,13 +179,27 @@
 	
 	    _classCallCheck(this, Game);
 	
-	    this.workBoard = new _board2.default(canvas, bgCanvas, 20, 20, 20);
+	    var size = 15;
+	    canvas.width = canvas.clientWidth;
+	    canvas.height = canvas.clientHeight;
+	    bgCanvas.width = bgCanvas.clientWidth;
+	    bgCanvas.height = bgCanvas.clientHeight;
+	    targetCanvas.width = targetCanvas.clientWidth;
+	    targetCanvas.height = targetCanvas.clientHeight;
+	    targetBgCanvas.width = targetBgCanvas.clientWidth;
+	    targetBgCanvas.height = targetBgCanvas.clientHeight;
+	    editCanvas.width = editCanvas.clientWidth;
+	    editCanvas.height = editCanvas.clientHeight;
+	    console.log(canvas.clientWidth);
+	    console.log(targetCanvas.clientWidth);
+	    this.workBoard = new _board2.default(canvas, bgCanvas, size, size, (canvas.clientWidth - 1) / size);
 	    this.workBoard.isMatching = this.isMatching.bind(this);
-	    this.editor = new _editor2.default(editCanvas);
+	    this.editor = new _editor2.default(editCanvas, editCanvas.clientWidth / size);
 	    this.editor.addShape = this.addShape.bind(this);
 	    this.editor.hide();
 	    this.isEditing = false;
-	    this.targetBoard = new _board2.default(targetCanvas, targetBgCanvas, 20, 20, 15, true);
+	    var targetSize = 12;
+	    this.targetBoard = new _board2.default(targetCanvas, targetBgCanvas, targetSize, targetSize, (targetCanvas.clientWidth - 1) / targetSize, true);
 	    this.levels = levels;
 	    this.currentLevel = 0;
 	    this.loadLevel();
@@ -227,8 +241,12 @@
 	      this.targetBoard.invalid = true;
 	      this.targetMatric = getMatric(this.targetBoard.shapes);
 	      this.levels[this.currentLevel] = {
-	        initShapes: this.workBoard.shapes,
-	        targetShapes: this.targetBoard.shapes
+	        initShapes: this.workBoard.shapes.map(function (s) {
+	          return new _shape2.default(s.points, s.origin);
+	        }),
+	        targetShapes: this.targetBoard.shapes.map(function (s) {
+	          return new _shape2.default(s.points, s.origin);
+	        })
 	      };
 	      localStorage.setItem("LEVELS", JSON.stringify(this.levels));
 	    }
