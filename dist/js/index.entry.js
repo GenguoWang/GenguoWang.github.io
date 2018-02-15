@@ -389,7 +389,6 @@
 	        this.shapes.forEach(function (shape) {
 	          if (shape === this.currentShape) {
 	            ctx.save();
-	            ctx.translate(this.currentOffset.x, this.currentOffset.y);
 	            shape.draw(ctx);
 	            ctx.restore();
 	          } else {
@@ -408,15 +407,16 @@
 	      if (this.invalid) {
 	        return;
 	      }
-	      this.startPoint = this.getPointFromMouseEvent(e);
+	      var touchPoint = this.getPointFromMouseEvent(e);
 	      this.currentShape = null;
 	      for (var i = 0; i < this.shapes.length; ++i) {
-	        if (this.shapes[i].containsPoint(this.startPoint)) {
+	        if (this.shapes[i].containsPoint(touchPoint)) {
 	          // Move the target shape to the top.
 	          var tmp = this.shapes[0];
 	          this.shapes[0] = this.shapes[i];
 	          this.shapes[i] = tmp;
 	          this.currentShape = this.shapes[0];
+	          this.startPoint = this.currentShape.origin.minus(touchPoint);
 	          break;
 	        }
 	      }
@@ -431,9 +431,7 @@
 	      }
 	      if (this.isMouseDown && this.currentShape) {
 	        this.isMouseDown = false;
-	        this.currentShape.origin = this.currentShape.origin.add(this.currentOffset);
 	        this.currentShape.origin = new _point2.default(Math.round(this.currentShape.origin.x), Math.round(this.currentShape.origin.y));
-	        this.currentOffset = _point2.default.ZERO;
 	        this.render();
 	        this.isMatching && this.isMatching();
 	      }
@@ -449,7 +447,7 @@
 	      }
 	      if (this.isMouseDown && this.currentShape) {
 	        var nowPoint = this.getPointFromMouseEvent(e);
-	        this.currentOffset = nowPoint.minus(this.startPoint);
+	        this.currentShape.origin = this.startPoint.add(nowPoint);
 	        this.render();
 	      }
 	    }
@@ -457,7 +455,8 @@
 	    key: 'getPointFromMouseEvent',
 	    value: function getPointFromMouseEvent(e) {
 	      if (e.touches) {
-	        return new _point2.default((e.touches[0].clientX - this.canvas.offsetLeft) / this.ratio, (e.touches[0].clientY - this.canvas.offsetTop) / this.ratio);
+	        var rect = this.canvas.getBoundingClientRect();
+	        return new _point2.default((e.touches[0].clientX - rect.left) / this.ratio, (e.touches[0].clientY - rect.top) / this.ratio);
 	      }
 	      return new _point2.default(e.offsetX / this.ratio, e.offsetY / this.ratio);
 	    }
@@ -618,7 +617,7 @@
 	}
 	
 	function calculate(shapes) {
-	  if (shapes.length <= 1) {
+	  if (shapes.length < 1) {
 	    return null;
 	  }
 	  var polygons = shapes.map(function (s) {
@@ -654,21 +653,30 @@
 	  console.log("result");
 	  console.log(result);
 	  var fc = turf.featureCollection(result);
-	  var combinedResult = turf.combine(fc);
+	  var combinedResult = turf.combine(turf.unkinkPolygon(fc));
 	  console.log(combinedResult);
 	  if (combinedResult.features.length > 1) {
 	    alert("combined error");
 	  }
-	  if (combinedResult.features.length === 1) {
-	    return combinedResult.features[0];
+	  if (combinedResult.features.length === 0) {
+	    return null;
 	  }
-	  return null;
+	  var r = combinedResult.features[0];
+	  if (r.geometry.type === "MultiPolygon") {
+	    // union all the polygons
+	    var pl = r.geometry.coordinates.map(function (points) {
+	      return turf.polygon(points);
+	    });
+	    return turf.union.apply(null, pl);
+	  }
 	}
 	
 	function render(shapes, ctx) {
 	  var r = calculate(shapes);
 	  console.log("r", r);
 	  if (r) {
+	    var tmp = turf.union(r);
+	    console.log("tmp", tmp);
 	    if (r.geometry.type === "MultiPolygon") {
 	      console.log("draw");
 	      r.geometry.coordinates.forEach(function (points) {
